@@ -121,21 +121,25 @@ def binary_convert(num ,bits):
     return b.zfill(bits)
 
 
-def U_type(mnemonic, parts):
-    rd = parts[1].replace(",", "")
-    imm_value = int(parts[2])
+def U_type(parts, line):
+    op = parts[0]
+    opcode = mnemonic_opcode[op]
 
-    if rd not in registers:
-        print("Unknown register")
-        return 0
-    reg_code = registers[rd]
+    if size(parts) != 3:
+        print(f"line {line}: {op} takes rd, imm")
+        sys.exit(1)
 
-    opcode = mnemonic_opcode[mnemonic]
-    imm_binary = binary_convert(imm_value, 20)
+    rd_name = parts[1].replace(",", "")
+    rd = get_register(rd_name, line)
 
-    return imm_binary + reg_code + opcode
+    imm = int(parts[2])
+    if imm < 0 or imm > 1048575:
+        print(f"line {line}: immediate {imm} doesn't fit in 20 bits")
+        sys.exit(1)
 
+    imm_bin = binary_convert(imm, 20)
 
+    return imm_bin + rd + opcode
 def encode_j(imm_bin, rd, opcode):
     imm20    = imm_bin[0]
     imm10_1  = imm_bin[10:20]
