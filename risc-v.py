@@ -101,3 +101,37 @@ def assemble_s(parts, line):
         sys.exit(1)
     imm_bin = to_binary(imm, 12)
     return encode_s(imm_bin, rs2, rs1, funct3, opcode)
+
+def binary_convert(num ,bits):
+    if num < 0:
+        num = (1 << bits) +num
+    b = bin(num)[2:]
+    return b.zfill(bits)
+
+
+def convert_U_type(instruct):
+
+    parts = instruct.split()
+    instruct_name = parts[0]
+    reg_name = parts[1].replace(",","")
+    imm_value = int(parts[2])
+
+    if instruct_name == "lui":
+        opcode = "0110111"
+    elif instruct_name == "auipc":
+        opcode = "0010111"
+    else:
+        print("Wrong instruction")
+        return 0
+    
+    if reg_name not in registers:
+        print("Unknown register")
+        return 0
+    reg_code = registers[reg_name]
+
+    imm_binary = binary_convert(imm_value,20)
+
+    binary_instruct = imm_binary + reg_code + opcode
+
+    return binary_instruct
+    
