@@ -121,7 +121,7 @@ def binary_convert(num ,bits):
     return b.zfill(bits)
 
 
-def assemble_u(mnemonic, parts):
+def U_type(mnemonic, parts):
     rd = parts[1].replace(",", "")
     imm_value = int(parts[2])
 
