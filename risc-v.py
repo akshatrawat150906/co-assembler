@@ -134,4 +134,29 @@ def convert_U_type(instruct):
     binary_instruct = imm_binary + reg_code + opcode
 
     return binary_instruct
+
+
+def encode_j(imm_bin, rd, opcode):
+    imm20    = imm_bin[0]
+    imm10_1  = imm_bin[10:20]
+    imm11    = imm_bin[9]
+    imm19_12 = imm_bin[1:9]
+    return imm20 + imm10_1 + imm11 + imm19_12 + rd + opcode
+
+def assemble_j(parts, line):
+    op = parts[0]
+    opcode = mnemonic_opcode[op]
+    if len(parts) != 3:
+        print(f"line {line}: jal takes rd, imm")
+        sys.exit(1)
+    rd = get_register(parts[1], line)
+    offset = int(parts[2])
+    if offset % 2 != 0:
+        print(f"line {line}: jump offset has to be even")
+        sys.exit(1)
+    if offset < -1048576 or offset > 1048574:
+        print(f"line {line}: jump offset {offset} too big")
+        sys.exit(1)
+    imm_bin = to_binary(offset, 21)
+    return encode_j(imm_bin, rd, opcode)
     
