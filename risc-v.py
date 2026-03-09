@@ -121,31 +121,19 @@ def binary_convert(num ,bits):
     return b.zfill(bits)
 
 
-def convert_U_type(instruct):
-
-    parts = instruct.split()
-    instruct_name = parts[0]
-    reg_name = parts[1].replace(",","")
+def assemble_u(mnemonic, parts):
+    rd = parts[1].replace(",", "")
     imm_value = int(parts[2])
 
-    if instruct_name == "lui":
-        opcode = "0110111"
-    elif instruct_name == "auipc":
-        opcode = "0010111"
-    else:
-        print("Wrong instruction")
-        return 0
-    
-    if reg_name not in registers:
+    if rd not in registers:
         print("Unknown register")
         return 0
-    reg_code = registers[reg_name]
+    reg_code = registers[rd]
 
-    imm_binary = binary_convert(imm_value,20)
+    opcode = mnemonic_opcode[mnemonic]
+    imm_binary = binary_convert(imm_value, 20)
 
-    binary_instruct = imm_binary + reg_code + opcode
-
-    return binary_instruct
+    return imm_binary + reg_code + opcode
 
 
 def encode_j(imm_bin, rd, opcode):
