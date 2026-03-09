@@ -79,6 +79,18 @@ R_TYPE = {
     "and":  ("0000000", "111"),
 }
 
+opcode_select = {
+    "0110011": assemble_r,
+    "0000011": assemble_i,
+    "0010011": assemble_i,
+    "1100111": assemble_i,
+    "0100011": assemble_s,
+    "1100011": assemble_b,
+    "0110111": assemble_u,
+    "0010111": assemble_u,
+    "1101111": assemble_j,
+}
+
 def encode_s(imm_bin, rs2, rs1, funct3, opcode):
     upper = imm_bin[0:7]
     lower = imm_bin[7:12]
