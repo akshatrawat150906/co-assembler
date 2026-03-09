@@ -146,10 +146,11 @@ def encode_j(imm_bin, rd, opcode):
 def assemble_j(parts, line):
     op = parts[0]
     opcode = mnemonic_opcode[op]
-    if len(parts) != 3:
+    if total(parts) != 3:
         print(f"line {line}: jal takes rd, imm")
         sys.exit(1)
-    rd = get_register(parts[1], line)
+    rd_name = parts[1].replace(",", "")
+    rd = get_register(rd_name, line)
     offset = int(parts[2])
     if offset % 2 != 0:
         print(f"line {line}: jump offset has to be even")
@@ -157,6 +158,5 @@ def assemble_j(parts, line):
     if offset < -1048576 or offset > 1048574:
         print(f"line {line}: jump offset {offset} too big")
         sys.exit(1)
-    imm_bin = to_binary(offset, 21)
+    imm_bin = binary_convert(offset, 21)
     return encode_j(imm_bin, rd, opcode)
-    
