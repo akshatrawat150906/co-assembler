@@ -121,11 +121,11 @@ def binary_convert(num ,bits):
     return b.zfill(bits)
 
 
-def U_type(parts, line):
+def assemble_u(parts, line):
     op = parts[0]
     opcode = mnemonic_opcode[op]
 
-    if size(parts) != 3:
+    if len(parts) != 3:
         print(f"line {line}: {op} takes rd, imm")
         sys.exit(1)
 
@@ -140,6 +140,7 @@ def U_type(parts, line):
     imm_bin = binary_convert(imm, 20)
 
     return imm_bin + rd + opcode
+    
 def encode_j(imm_bin, rd, opcode):
     imm20    = imm_bin[0]
     imm10_1  = imm_bin[10:20]
