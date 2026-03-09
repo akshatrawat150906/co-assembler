@@ -151,7 +151,7 @@ def encode_j(imm_bin, rd, opcode):
 def assemble_j(parts, line):
     op = parts[0]
     opcode = mnemonic_opcode[op]
-    if total(parts) != 3:
+    if len(parts) != 3:
         print(f"line {line}: jal takes rd, imm")
         sys.exit(1)
     rd_name = parts[1].replace(",", "")
