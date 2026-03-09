@@ -165,3 +165,80 @@ def assemble_j(parts, line):
         sys.exit(1)
     imm_bin = binary_convert(offset, 21)
     return encode_j(imm_bin, rd, opcode)
+
+#encode i
+def encode_i(imm_binary, rs1, funct3, rd, opcode):
+    return imm_binary + rs1 + funct3 + rd + opcode
+
+#assemble
+def assemble_i(parts, line):
+    op=parts[0]
+    opcode, funct3=I_TYPE[op]
+
+    #addi-> addi rd, rs1, imm
+    if op== "addi":
+        if len(parts)!= 4:
+            print(f"error on line {line}: addi needs rd, rs1, imm")
+            sys.exit(1)
+        rd= get_register(parts[1], line)
+        rs1= get_register(parts[2], line)
+        imm= int(parts[3])
+
+    # lw, jalr-> op rd, imm(rs1)
+    else:
+        if len(parts)!= 3:
+            print(f"error on line {line}: {op} needs rd, imm(rs1)")
+            sys.exit(1)
+        rd= get_register(parts[1], line)
+        offset_register= parts[2]
+        imm= int(offset_register[:offset_register.index("(")])
+        rs1_name= offset_register[offset_register.index("(")+1:offset_register.index(")")]
+        rs1= get_register(rs1_name, line)
+
+    if imm< -2048 or imm> 2047:
+        print(f"error on line {line}: immediate {imm} out of range")
+        sys.exit(1)
+
+    imm_binary= to_binary(imm, 12)
+    return encode_i(imm_binary, rs1, funct3, rd, opcode)
+
+#encode b
+
+def encode_b(rs1, rs2, funct3, opcode, offset, line):
+    rs1= get_register(rs1, line)
+    rs2= get_register(rs2, line)
+    imm= to_binary(offset, 13)  # convert offset in 13-bit 2's comp. string
+    imm12= imm[0]
+    imm10_5= imm[2:8]
+    imm4_1= imm[8:12]
+    imm11= imm[1]
+    if offset%2!= 0:
+        print(f"error on line {line}, offset must be multiple of 2 bytes")
+        sys.exit(1)
+    if offset<-4096 or offset>4094:
+        print(f"error on line {line}, offset is out of range")
+        sys.exit(1)
+
+    return imm12+ imm10_5+ rs2+ rs1+ funct3+ imm4_1+ imm11+ opcode
+
+#assemble b
+def assemble_b(parts, line, labels, current_pc):
+    op= parts[0]
+    opcode, funct3= B_TYPE[op]
+
+    if len(parts)!= 4:
+        print(f"error on line {line}: {op} needs rs1, rs2, label")
+        sys.exit(1)
+
+    rs1= parts[1]
+    rs2= parts[2]
+    label= parts[3]
+
+    if label not in labels:
+        print(f"error on line {line}: unknown label {label}")
+        sys.exit(1)
+
+    target= labels[label]
+    offset= target- current_pc
+
+    return encode_b(rs1, rs2, funct3, opcode, offset, line)
