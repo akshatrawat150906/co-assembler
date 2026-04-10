@@ -92,3 +92,41 @@ elif opcode == 0x63:
         if next_pc == pc:
             halt = True
 
+#Rtypee
+
+if opcode == 0x33:
+    if func3 == 0x0:
+        if func7 == 0x00: 
+            register[rd] = register[rs1] + register[rs2]
+        elif func7 == 0x20: 
+            register[rd] = register[rs1] - register[rs2]
+    
+    elif func3 == 0x1: 
+        register[rd] = register[rs1] << (register[rs2] & 0x1F)
+
+        
+    elif func3 == 0x2: 
+        if signed_32(register[rs1]) < signed_32(register[rs2]):
+            register[rd] = 1
+        else:
+            register[rd] = 0
+            
+    elif func3 == 0x3: 
+        if unsigned_32(register[rs1]) < unsigned_32(register[rs2]):
+            register[rd] = 1
+        else:
+            register[rd] = 0
+            
+    elif func3 == 0x4:
+        register[rd] = register[rs1] ^ register[rs2]
+        
+    elif func3 == 0x5:
+        if func7 == 0x00: 
+            register[rd] = unsigned_32(register[rs1]) >> (register[rs2] & 0x1F)
+            
+    elif func3 == 0x6: 
+        register[rd] = register[rs1] | register[rs2]
+        
+    elif func3 == 0x7: 
+        register[rd] = register[rs1] & register[rs2]
+
