@@ -130,3 +130,24 @@ if opcode == 0x33:
     elif func3 == 0x7: 
         register[rd] = register[rs1] & register[rs2]
 
+
+# J Type 
+elif opcode == 0x6F:
+    part_a = ((inst >> 31) << 20)
+    part_b = (((inst >> 12) & 0xFF) << 12)
+    part_c = (((inst >> 20) & 1) << 11)
+    part_d = (((inst >> 21) & 0x3FF) << 1)
+
+    all_bits = part_a |part_b | part_c |part_d
+
+    evalue = sign_extend(all_bits, 21)
+    imm = signed_32(evalue)
+
+    register[rd] = (pc + 4) & 0xFFFFFFFF
+    next_pc = (pc + imm) & 0xFFFFFFFF
+    
+    if next_pc % 4 != 0:
+        print(f"Alignment Error  JAL target is not 4-byte aligned.")
+        import sys
+        sys.exit(1)
+
