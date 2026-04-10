@@ -8,6 +8,14 @@ elif opcode == 0x67:
         sys.exit(1)
     register[rd] = (pc + 4) & 0xFFFFFFFF
     next_pc = target & 0xFFFFFFFE
+
+elif opcode == 0x37:
+    register[rd] = inst & 0xFFFFF000
+
+elif opcode == 0x17:
+    register[rd] = (pc + (inst & 0xFFFFF000)) & 0xFFFFFFFF
+
+
     inst = program_m[pc // 4]
     opcode = inst & 0x7F
     rd = (inst >> 7) & 0x1F
@@ -29,3 +37,6 @@ elif opcode == 0x23:
             import sys
             sys.exit(1)
         data_m[addr] = register[rs2]
+
+
+
